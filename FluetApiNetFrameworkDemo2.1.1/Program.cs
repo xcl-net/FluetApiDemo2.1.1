@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 
 namespace FluetApiNetFrameworkDemo2._1._1
 {
-    /// <summary>
-    /// 数据直接保存到了SqlLocalDb.exe
-    /// </summary>
+
     public class Program
     {
         static void Main(string[] args)
@@ -41,7 +39,7 @@ namespace FluetApiNetFrameworkDemo2._1._1
 
     public class EfDbContext : DbContext
     {
-        public EfDbContext()
+        public EfDbContext():base("name=ConnectionString")
         {
 
         }
