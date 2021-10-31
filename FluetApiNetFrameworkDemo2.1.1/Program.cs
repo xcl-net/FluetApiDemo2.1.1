@@ -11,9 +11,7 @@ using System.Threading.Tasks;
 namespace FluetApiNetFrameworkDemo2._1._1
 {
     /// <summary>
-    /// 2.2 约定
-    /// 2.2.5 
-    /// 6. 自定义特性
+    /// 2.2 介于代码配置
     /// </summary>
     public class Program
     {
@@ -56,6 +54,7 @@ namespace FluetApiNetFrameworkDemo2._1._1
         }
     }
 
+    [DbConfigurationType(typeof(MyConfiguration))]
     public class EfDbContext : DbContext
     {
         public EfDbContext() : base("name=ConnectionString")
