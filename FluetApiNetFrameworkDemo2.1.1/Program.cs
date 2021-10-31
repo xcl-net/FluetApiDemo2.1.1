@@ -18,21 +18,23 @@ namespace FluetApiNetFrameworkDemo2._1._1
 
             using (var efDb = new EfDbContext())
             {
-              
-
-
-                //efDb.Order.Add(
-                // new Order { 
-                //      Name = "xcllxc",
-                  
-                //  }
-                //    );
-                //efDb.SaveChanges();
 
 
 
-                //var name = efDb.Order.First().Name;
-                //Console.WriteLine(name); //运行可以直接打印出来 "xcll"
+                efDb.Order.Add(
+                 new Order
+                 {
+                     Name = "xcllxc",
+                    
+                 }
+                 
+                    );
+                efDb.SaveChanges();
+
+
+
+                var name = efDb.Order.First().Name;
+                Console.WriteLine(name); //运行可以直接打印出来 "xcll"
             }
 
 
@@ -63,6 +65,16 @@ namespace FluetApiNetFrameworkDemo2._1._1
 
     public class Order
     {
+        public Order()
+        { 
+            
+        }
+
+        //public Order(Address address)
+        //{ 
+        //    Address = address;
+        //}
+
         public int Id { get; set; }
         public string Name { get; set; }
 
