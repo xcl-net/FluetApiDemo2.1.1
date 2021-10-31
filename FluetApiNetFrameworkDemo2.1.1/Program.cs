@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,17 +19,13 @@ namespace FluetApiNetFrameworkDemo2._1._1
 
             using (var efDb = new EfDbContext())
             {
-
-
-
                 efDb.Order.Add(
-                 new Order
-                 {
-                     Name = "xcllxc",
+                     new Order
+                     {
+                         Name = "xcllxc",
                     
-                 }
-                 
-                    );
+                     });
+
                 efDb.SaveChanges();
 
 
@@ -51,39 +48,59 @@ namespace FluetApiNetFrameworkDemo2._1._1
             Database.SetInitializer(new DropCreateDatabaseIfModelChanges<EfDbContext>());
         }
 
-        public DbSet<Order> Order {  get;}
+        public DbSet<Order> Order { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Order>().ToTable("Orders");
-            modelBuilder.ComplexType<Order.Address>();
+
+            //全局约定方案一:
+            //modelBuilder.Properties()
+            //    .Where(p=>p.Name == "Id")
+            //    .Configure(p => p.IsKey());
+
+            //配置所有模型, 属性类型字段为deciaml的为: 10位且保留2位小数;
+            modelBuilder.Properties<decimal>()
+                .Configure(config => config.HasPrecision(10, 2));
+
+            //全局约定方案二: 单独写一个类
+            modelBuilder.Conventions.Add<CustomKeyConvention>();
+
+
+            //第一次定义
+            modelBuilder.Properties<string>()
+                .Where(x=>x.Name == "Name")
+                .Configure(c => c.HasMaxLength(500));
+
+            //第二次定义(重复定义) , 以第二次定义为准;
+            modelBuilder.Properties<string>()
+                .Where(x => x.Name == "Name")
+                .Configure(c => c.HasMaxLength(250));
 
             base.OnModelCreating(modelBuilder);
         }
     }
 
 
-    public class Order
+    public class CustomKeyConvention : Convention
     {
-        public Order()
-        { 
-            
+        public CustomKeyConvention()
+        {
+            Properties()
+                .Where(prop => prop.Name == "Id")
+                .Configure(config => config.IsKey());
         }
 
-        //public Order(Address address)
-        //{ 
-        //    Address = address;
-        //}
+
+    }
+
+
+    public class Order
+    {
 
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public class Address
-        {
-            public string Street { get; set; }
-            public string Region { get; set; }
-            public string Country { get; set; }
-        }
     }
 
 
