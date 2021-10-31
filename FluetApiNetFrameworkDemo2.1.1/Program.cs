@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace FluetApiNetFrameworkDemo2._1._1
@@ -52,60 +53,28 @@ namespace FluetApiNetFrameworkDemo2._1._1
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Order>().ToTable("Orders");
 
-            //全局约定方案一:
-            //modelBuilder.Properties()
-            //    .Where(p=>p.Name == "Id")
-            //    .Configure(p => p.IsKey());
+            modelBuilder.Types()
+                .Configure(c => c.ToTable(GetTableName(c.ClrType)));
 
-            //配置所有模型, 属性类型字段为deciaml的为: 10位且保留2位小数;
-            modelBuilder.Properties<decimal>()
-                .Configure(config => config.HasPrecision(10, 2));
-
-            //全局约定方案二: 单独写一个类
-            modelBuilder.Conventions.Add<CustomKeyConvention>();
-
-
-            //第一次定义
-            modelBuilder.Properties<string>()
-                .Where(x=>x.Name == "Name")
-                .Configure(c => c.HasMaxLength(500));
-
-            //第二次定义(重复定义) , 以第二次定义为准;
-            modelBuilder.Properties<string>()
-                .Where(x => x.Name == "Name")
-                .Configure(c => c.HasMaxLength(250));
-
-
-            //4. 时间类型指定其他类型
-            modelBuilder.Conventions.Add(new DateTime2Convention());
 
             base.OnModelCreating(modelBuilder);
+
         }
-    }
 
-
-    public class CustomKeyConvention : Convention
-    {
-        public CustomKeyConvention()
+        //给表名字统一加后缀,前缀
+        private string GetTableName(Type type)
         {
-            Properties()
-                .Where(prop => prop.Name == "Id")
-                .Configure(config => config.IsKey());
+            //var result = Regex.Replace(type.Name, ".[A-Z]",
+            //    m => m.Value[0] + "_" + m.Value[1]);
+
+
+            var result = Regex.Replace(type.Name, "[A-Z]+","nn__nn");
+
+            return result.ToString();
         }
     }
 
-
-    //4. 自定义类约定
-    public class DateTime2Convention : Convention
-    {
-        public DateTime2Convention()
-        {
-            this.Properties<DateTime>()
-                .Configure(c => c.HasColumnType("datetime2"));
-        }
-    }
 
 
     public class Order
@@ -114,7 +83,6 @@ namespace FluetApiNetFrameworkDemo2._1._1
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public DateTime CreateTime { get; set; }
     }
 
 
