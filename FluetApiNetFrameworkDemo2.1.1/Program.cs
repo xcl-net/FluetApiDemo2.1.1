@@ -22,11 +22,11 @@ namespace FluetApiNetFrameworkDemo2._1._1
 
             using (var efDb = new EfDbContext())
             {
-                efDb.Order.Add(
-                     new Order
+                efDb.BillingDetail.Add(
+                     new BankAccount
                      {
-                         Name = "xcllxc",
-                         BookName = "english"
+                         BankName = "建设银行111",
+                         Swift = "jsyh"
                     
                      });
 
@@ -34,8 +34,19 @@ namespace FluetApiNetFrameworkDemo2._1._1
 
 
 
-                var name = efDb.Order.First().Name;
-                Console.WriteLine(name); //运行可以直接打印出来 "xcll"
+                var name = efDb.BillingDetail.First().BillingDetailId;
+
+
+                var query = (from b in
+                 efDb.BillingDetail.OfType<BankAccount>()
+                             select b).ToList();
+
+                foreach (var item in query)
+                {
+                    Console.WriteLine(item.BankName);
+                }
+             
+
             }
 
 
@@ -52,70 +63,64 @@ namespace FluetApiNetFrameworkDemo2._1._1
             Database.SetInitializer(new DropCreateDatabaseIfModelChanges<EfDbContext>());
         }
 
-        public DbSet<Order> Order { get; set; }
+        public DbSet<BillingDetail> BillingDetail { get; set; }
 
-
-
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-
-            modelBuilder.Properties()
-                .Where(x => x.GetCustomAttributes(false).OfType<NonUnicode>().Any())
-                .Configure(c => c.IsUnicode(false));
-
-            //modelBuilder.Properties()
-            //    .Where(x=>x.Name == "BookName")
-            //    .
-
-            //modelBuilder.Properties()
-            //    .Where(x => 
-            //    x.GetCustomAttributes(false)
-            //    .OfType<IsUnicode>().Any())
-            //    .Configure(c =>
-            //    c.IsUnicode(c.ClrPropertyInfo.GetCustomAttributes<IsUnicode>));
-
-
-            modelBuilder.Properties()
-                .Having(x =>
-                x.GetCustomAttributes(false).OfType<IsUnicode>().FirstOrDefault())
-                .Configure((config, att) => config.IsUnicode(att.Unicode));
-            //Having 起到过滤的作用;
-
-            base.OnModelCreating(modelBuilder);
-
-        }
     }
 
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]public class NonUnicode : Attribute
-    { 
-   
-    }
-
-
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    public class IsUnicode : Attribute
+    /// <summary>
+    /// 账户明细
+    /// </summary>
+    public abstract class BillingDetail
     {
-        public bool Unicode { get; set; }
-        public IsUnicode(bool isUnicode)
-        {
-            Unicode = isUnicode;
-        }
+        /// <summary>
+        /// 账户明细id
+        /// </summary>
+        public int BillingDetailId { get; set; }
+
+        /// <summary>
+        /// 账户所属者
+        /// </summary>
+        public string Owner { get; set; }
+
+        /// <summary>
+        /// 账号
+        /// </summary>
+        public string Number { get; set; }
     }
 
 
-    public class Order
+    /// <summary>
+    /// 银行账号
+    /// </summary>
+    public class BankAccount : BillingDetail
     {
+        public string BankName { get; set; }
 
-        public int Id { get; set; }
-        
-        [NonUnicode]
-        public string Name { get; set; }
-
-        public string City { get; set; }
-
-        public string BookName { get; set; }
+        /// <summary>
+        /// 所属金融银行
+        /// </summary>
+        public string Swift { get; set; }
     }
 
 
+    /// <summary>
+    /// 信用卡
+    /// </summary>
+    public class CreditCard : BillingDetail
+    {
+        /// <summary>
+        /// 信用卡类型
+        /// </summary>
+        public int CardType { get; set; }
 
+        /// <summary>
+        /// 信用卡失效月份
+        /// </summary>
+        public string ExpiryMonth { get; set; }
+
+        /// <summary>
+        /// 信用卡失效年份
+        /// </summary>
+        public string ExpiryYear { get; set; }
+    }
 }
