@@ -9,7 +9,7 @@ namespace FluetApiNetFrameworkDemo2._1._1
 {
     /// <summary>
     /// 2.2 约定
-    /// 2.2.1 类型发现
+    /// 2.2.3 关系约定
     /// </summary>
     public class Program
     {
@@ -47,7 +47,7 @@ namespace FluetApiNetFrameworkDemo2._1._1
         }
 
         public DbSet<Department> Department { get; set; }
-        public DbSet<StudentAddress> StudentAddress {  get;}
+        public DbSet<Course> Course {  get;}
     }
 
 
@@ -59,23 +59,23 @@ namespace FluetApiNetFrameworkDemo2._1._1
         public string Name { get; set; }
 
 
-        ////Navigation property
-        //public virtual ICollection<Course> Courses { get; set; }
+        //Navigation property
+        public virtual ICollection<Course> Courses { get; set; }
 
     }
 
-    public class StudentAddress
+    public class Course
     {
-        /// <summary>
-        /// 必须 显示添加一个字段为主键
-        /// </summary>
-        public int Id { get; set; }
-        public int AddressId { get; set; }
-        public int StudentId { get; set; }
-    }
+        //主键
+        public int CourseId { get; set; }
+        public string Title { get; set; }
+        public int Credits { get; set; }
 
-    //public class Course
-    //{
-    //    public int MyProperty { get; set; }
-    //}
+        //外键
+        public int DepartmentId { get; set; }
+
+        //导航属性
+        public virtual Department Department { get; set; }
+
+    }
 }
