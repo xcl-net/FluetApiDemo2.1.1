@@ -65,6 +65,18 @@ namespace FluetApiNetFrameworkDemo2._1._1
 
         public DbSet<BillingDetail> BillingDetail { get; set; }
 
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+
+            modelBuilder.Entity<BillingDetail>()
+                .Map<BankAccount>(m =>
+                                  m.Requires("BillingDetailType").HasValue(1))
+                .Map<CreditCard>(m => 
+                                  m.Requires("BillingDetailType").HasValue(2));
+                
+            base.OnModelCreating(modelBuilder);
+        }
+
     }
 
     /// <summary>
