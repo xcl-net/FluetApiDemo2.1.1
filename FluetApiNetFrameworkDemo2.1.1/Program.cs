@@ -41,6 +41,20 @@ namespace FluetApiNetFrameworkDemo2._1._1
     {
         public EfDbContext():base("name=ConnectionString")
         {
+            //禁用数据库初始化策略
+            //Database.SetInitializer<EfDbContext>(null); //打开注释,ef则不会自动迁移数据库
+
+
+            #region 方案一: 构造函数里,指定EF数据库生成策略;
+            ////如果数据库不存在, 就创建
+            //Database.SetInitializer(new CreateDatabaseIfNotExists<EfDbContext>());
+
+            ////总是创建数据库, 无论存在与否
+            //Database.SetInitializer(new DropCreateDatabaseAlways<EfDbContext>());
+
+            ////如果EF检测到数据库模型发生了变化, 将更新模型
+            //Database.SetInitializer(new DropCreateDatabaseIfModelChanges<EfDbContext>()); 
+            #endregion
 
         }
 
