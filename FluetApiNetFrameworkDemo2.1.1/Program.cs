@@ -73,10 +73,13 @@ namespace FluetApiNetFrameworkDemo2._1._1
             modelBuilder.Entity<Blog>()
                 .HasKey(k => new
                 {
-                    Id = k.Id,
-                    BlogId = k.BlogId
+                    Id = k.Id
                 }).Property(p=>p.Id)
                 .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<Blog>()
+                .Property(p => p.Decimal)
+                .HasPrecision(18, 4);
                 
             base.OnModelCreating(modelBuilder);
         }
@@ -88,5 +91,13 @@ namespace FluetApiNetFrameworkDemo2._1._1
         public int Id { get; set; }
         public int BlogId { get; set; }
         public string Name { get; set; }
+
+        public double Double { get; set; }
+        public float Float { get; set; }
+        public Guid Guid { get; set; }
+        public TimeSpan TimeSpan { get; set; }
+
+        public decimal Decimal { get; set; }
+        //public DateTime DateTime { get; set; } //直接映射会报错;
     }
 }
