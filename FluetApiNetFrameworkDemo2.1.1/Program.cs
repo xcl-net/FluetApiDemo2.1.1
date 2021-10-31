@@ -9,7 +9,7 @@ namespace FluetApiNetFrameworkDemo2._1._1
 {
     /// <summary>
     /// 2.2 约定
-    /// 2.2.3 关系约定
+    /// 2.2.4 复杂类型约定
     /// </summary>
     public class Program
     {
@@ -18,18 +18,21 @@ namespace FluetApiNetFrameworkDemo2._1._1
 
             using (var efDb = new EfDbContext())
             {
-                efDb.Department.Add(
-                    new Department
-                    {
-                        Name = "xcll"
-                    }
-                    );
-                efDb.SaveChanges();
+              
+
+
+                //efDb.Order.Add(
+                // new Order { 
+                //      Name = "xcllxc",
+                  
+                //  }
+                //    );
+                //efDb.SaveChanges();
 
 
 
-                var name = efDb.Department.First().Name;
-                Console.WriteLine(name); //运行可以直接打印出来 "xcll"
+                //var name = efDb.Order.First().Name;
+                //Console.WriteLine(name); //运行可以直接打印出来 "xcll"
             }
 
 
@@ -46,36 +49,31 @@ namespace FluetApiNetFrameworkDemo2._1._1
             Database.SetInitializer(new DropCreateDatabaseIfModelChanges<EfDbContext>());
         }
 
-        public DbSet<Department> Department { get; set; }
-        public DbSet<Course> Course {  get;}
+        public DbSet<Order> Order {  get;}
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Order>().ToTable("Orders");
+            modelBuilder.ComplexType<Order.Address>();
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 
 
-
-    public class Department
+    public class Order
     {
-        //primary key
-        public int DepartmentId { get; set; } //Id结尾的默认生成为主键自动递增;
+        public int Id { get; set; }
         public string Name { get; set; }
 
-
-        //Navigation property
-        public virtual ICollection<Course> Courses { get; set; }
-
+        public class Address
+        {
+            public string Street { get; set; }
+            public string Region { get; set; }
+            public string Country { get; set; }
+        }
     }
 
-    public class Course
-    {
-        //主键
-        public int CourseId { get; set; }
-        public string Title { get; set; }
-        public int Credits { get; set; }
 
-        //外键
-        public int DepartmentId { get; set; }
 
-        //导航属性
-        public virtual Department Department { get; set; }
-
-    }
 }
