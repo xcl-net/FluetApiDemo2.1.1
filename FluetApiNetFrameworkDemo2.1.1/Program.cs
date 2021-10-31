@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
@@ -20,11 +21,11 @@ namespace FluetApiNetFrameworkDemo2._1._1
 
             using (var efDb = new EfDbContext())
             {
-                efDb.BillingDetail.Add(
-                     new BankAccount
+                efDb.Blog.Add(
+                     new Blog
                      {
-                         BankName = "建设银行111",
-                         Swift = "jsyh"
+                         Name = "博客1",
+                         BlogId = 1
                     
                      });
 
@@ -32,16 +33,15 @@ namespace FluetApiNetFrameworkDemo2._1._1
 
 
 
-                var name = efDb.BillingDetail.First().BillingDetailId;
 
 
                 var query = (from b in
-                 efDb.BillingDetail.OfType<BankAccount>()
+                 efDb.Blog.OfType<Blog>()
                              select b).ToList();
 
                 foreach (var item in query)
                 {
-                    Console.WriteLine(item.BankName);
+                    Console.WriteLine(item.Name);
                 }
              
 
@@ -62,76 +62,31 @@ namespace FluetApiNetFrameworkDemo2._1._1
             Database.SetInitializer(new DropCreateDatabaseIfModelChanges<EfDbContext>());
         }
 
-        public DbSet<BillingDetail> BillingDetail { get; set; }
+        public DbSet<Blog> Blog { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<BillingDetail>()
-                .Map<BankAccount>(m =>
-                                  m.Requires("BillingDetailType").HasValue(1))
-                .Map<CreditCard>(m => 
-                                  m.Requires("BillingDetailType").HasValue(2));
+            modelBuilder.Entity<Blog>().ToTable("Blogs");
+
+            //联合主键
+            modelBuilder.Entity<Blog>()
+                .HasKey(k => new
+                {
+                    Id = k.Id,
+                    BlogId = k.BlogId
+                }).Property(p=>p.Id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
                 
             base.OnModelCreating(modelBuilder);
         }
 
     }
 
-    /// <summary>
-    /// 账户明细
-    /// </summary>
-    public abstract class BillingDetail
+    public class Blog
     {
-        /// <summary>
-        /// 账户明细id
-        /// </summary>
-        public int BillingDetailId { get; set; }
-
-        /// <summary>
-        /// 账户所属者
-        /// </summary>
-        public string Owner { get; set; }
-
-        /// <summary>
-        /// 账号
-        /// </summary>
-        public string Number { get; set; }
-    }
-
-
-    /// <summary>
-    /// 银行账号
-    /// </summary>
-    public class BankAccount : BillingDetail
-    {
-        public string BankName { get; set; }
-
-        /// <summary>
-        /// 所属金融银行
-        /// </summary>
-        public string Swift { get; set; }
-    }
-
-
-    /// <summary>
-    /// 信用卡
-    /// </summary>
-    public class CreditCard : BillingDetail
-    {
-        /// <summary>
-        /// 信用卡类型
-        /// </summary>
-        public int CardType { get; set; }
-
-        /// <summary>
-        /// 信用卡失效月份
-        /// </summary>
-        public string ExpiryMonth { get; set; }
-
-        /// <summary>
-        /// 信用卡失效年份
-        /// </summary>
-        public string ExpiryYear { get; set; }
+        public int Id { get; set; }
+        public int BlogId { get; set; }
+        public string Name { get; set; }
     }
 }
