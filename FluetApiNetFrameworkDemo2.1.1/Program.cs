@@ -77,6 +77,10 @@ namespace FluetApiNetFrameworkDemo2._1._1
                 .Where(x => x.Name == "Name")
                 .Configure(c => c.HasMaxLength(250));
 
+
+            //4. 时间类型指定其他类型
+            modelBuilder.Conventions.Add(new DateTime2Convention());
+
             base.OnModelCreating(modelBuilder);
         }
     }
@@ -90,8 +94,17 @@ namespace FluetApiNetFrameworkDemo2._1._1
                 .Where(prop => prop.Name == "Id")
                 .Configure(config => config.IsKey());
         }
+    }
 
 
+    //4. 自定义类约定
+    public class DateTime2Convention : Convention
+    {
+        public DateTime2Convention()
+        {
+            this.Properties<DateTime>()
+                .Configure(c => c.HasColumnType("datetime2"));
+        }
     }
 
 
@@ -101,6 +114,7 @@ namespace FluetApiNetFrameworkDemo2._1._1
         public int Id { get; set; }
         public string Name { get; set; }
 
+        public DateTime CreateTime { get; set; }
     }
 
 
